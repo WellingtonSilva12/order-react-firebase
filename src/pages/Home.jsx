@@ -18,7 +18,8 @@ const serviceConverter = {
       description: service.description,
       orderService: service.orderService,
       quantity: service.quantity,
-      dateOrder: service.dateOrder
+      dateOrder: service.dateOrder,
+      priceService: service.priceService
     }
   },
   fromFirestore: (snapshot, options) => {
@@ -38,6 +39,7 @@ const Home = () => {
   const [orderService, setOrderService] = useState('')
   const [quantity, setQuantity] = useState('')
   const [dateOrder, setDateOrder] = useState('')
+  const [priceService, setPriceService] = useState('')
 
   const handleClient = useCallback(e => {
     setClient(e.target.value)
@@ -55,6 +57,10 @@ const Home = () => {
     setQuantity(e.target.value)
   }, [])
 
+  const handlePriceService = useCallback(e => {
+    setPriceService(e.target.value)
+  })
+
   const handleSubmit = useCallback(
     async e => {
       e.preventDefault()
@@ -71,7 +77,8 @@ const Home = () => {
           description: description,
           orderService: orderService,
           quantity: quantity,
-          dateOrder: dateOrder
+          dateOrder: dateOrder,
+          priceService: priceService
         })
       } else {
         const ref = collection(db, 'services')
@@ -80,7 +87,8 @@ const Home = () => {
           description: description,
           orderService: orderService,
           quantity: quantity,
-          dateOrder: dateOrder
+          dateOrder: dateOrder,
+          priceService: priceService
         })
       }
       setId('')
@@ -89,11 +97,12 @@ const Home = () => {
       setOrderService('')
       setQuantity('')
       setDateOrder('')
+      setPriceService('')
     },
-    [id, client, description, orderService, quantity, dateOrder]
+    [id, client, description, orderService, quantity, dateOrder, priceService]
   )
 
-  const [services, loading, setLoading] = useCollectionData(
+  const [services, loading] = useCollectionData(
     collection(db, 'services').withConverter(serviceConverter)
   )
   const handleDelete = useCallback(id => {
@@ -107,6 +116,7 @@ const Home = () => {
     setOrderService(service.orderService)
     setQuantity(service.quantity)
     setDateOrder(service.dateOrder)
+    setPriceService(service.priceService)
   }, [])
 
   return (
@@ -127,20 +137,27 @@ const Home = () => {
             onChange={handleQuantity}
           />
           <Input
+            type="text"
+            placeholder="Valor"
+            value={priceService}
+            onChange={handlePriceService}
+          />
+        </div>
+        <div className="input-top">
+          <Input
+            type="text"
+            placeholder="Serviço Solicitado"
+            value={orderService}
+            onChange={handleOrderService}
+          />
+
+          <Input
             type="date"
             placeholder="Data"
             value={dateOrder}
             onChange={e => {
               setDateOrder(e.target.value)
             }}
-          />
-        </div>
-        <div>
-          <Input
-            type="text"
-            placeholder="Serviço Solicitado"
-            value={orderService}
-            onChange={handleOrderService}
           />
         </div>
         <div>
@@ -179,6 +196,9 @@ const Home = () => {
             </p>
             <p>
               <strong>Serviço:</strong> {service.orderService}
+            </p>
+            <p>
+              <strong>Valor:</strong> R$ {service.priceService}
             </p>
             <p>
               <strong>Quantidade:</strong> {service.quantity}
